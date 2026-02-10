@@ -7,6 +7,8 @@ export const Login = () => {
     const { store, dispatch } = useGlobalReducer()
     const [email, SetEmail] = useState("");
     const [password, SetPassword] = useState("");
+    const token = sessionStorage.getItem("token");
+    console.log("This is your token", token);
 
     const loadMessage = async () => {
         try {
@@ -52,7 +54,10 @@ export const Login = () => {
                 if (resp.status === 200) return resp.json();
                 else alert("There has been some error");
             })
-            .then()
+            .then(data => {
+                console.log("this came from the backend", data)
+                sessionStorage.setItem("token", data.access_token)
+            })
             .catch(error => {
                 console.error("There was an error!!!", error);
             })
@@ -63,11 +68,21 @@ export const Login = () => {
     return (
         <div className="text-center mt-5">
             <h1 className="display-4">Login</h1>
-            <div>
-                <input type="text" placeholder="email" value={email} onChange={(e) => SetEmail(e.target.value)} />
-                <input type="password" placeholder="password" value={password} onChange={(e) => SetPassword(e.target.value)} />
-                <button onClick={handleClick}>Login</button>
-            </div>
+
+            {(token && token != "" && token != undefined) ? "You are logged in with this token" + token :
+
+                <div>
+                    <input type="text" placeholder="email" value={email} onChange={(e) => SetEmail(e.target.value)} />
+                    <input
+                        type="password"
+                        placeholder="password"
+                        value={password}
+                        onChange={(e) => SetPassword(e.target.value)} />
+                    <button onClick={handleClick}>Login</button>
+                </div>
+
+            }
+
         </div>
     );
 };
